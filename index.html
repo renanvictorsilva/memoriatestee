@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo da Memória - Água e Sustentabilidade</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f9ff;
+    text-align:center;
+    margin:0;
+    padding:20px;
+}
+
+h1{
+    color:#1565c0;
+}
+
+#game{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;
+    max-width:1200px;
+    margin:auto;
+}
+
+.card{
+    height:140px;
+    cursor:pointer;
+    perspective:1000px;
+}
+
+.card-inner{
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:transform 0.6s;
+    transform-style:preserve-3d;
+}
+
+.card.flip .card-inner{
+    transform:rotateY(180deg);
+}
+
+.front,.back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    backface-visibility:hidden;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+    box-sizing:border-box;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.front{
+    background:#1976d2;
+    color:white;
+}
+
+.back{
+    background:white;
+    border:2px solid #1976d2;
+    color:#333;
+    transform:rotateY(180deg);
+}
+
+#status{
+    margin:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>💧 Jogo da Memória - Água e Sustentabilidade</h1>
+
+<p>Encontre a resposta correta para cada pergunta.</p>
+
+<div id="status">Pares encontrados: 0 / 10</div>
+
+<div id="game"></div>
+
+<script>
+
+const pares = [
+
+{
+id:1,
+pergunta:"O que é água potável?",
+resposta:"Água própria para o consumo humano."
+},
+
+{
+id:2,
+pergunta:"O que é o ciclo da água?",
+resposta:"Processo de evaporação, condensação e precipitação."
+},
+
+{
+id:3,
+pergunta:"O que é uma nascente?",
+resposta:"Local onde a água brota naturalmente do solo."
+},
+
+{
+id:4,
+pergunta:"O que é poluição hídrica?",
+resposta:"Contaminação de rios, lagos e mares."
+},
+
+{
+id:5,
+pergunta:"O que é reuso da água?",
+resposta:"Utilização da água já usada para outra finalidade."
+},
+
+{
+id:6,
+pergunta:"Qual a função da mata ciliar?",
+resposta:"Proteger as margens dos rios."
+},
+
+{
+id:7,
+pergunta:"O que significa consumo consciente de água?",
+resposta:"Utilizar a água sem desperdícios."
+},
+
+{
+id:8,
+pergunta:"O que é assoreamento?",
+resposta:"Acúmulo de sedimentos nos rios."
+},
+
+{
+id:9,
+pergunta:"Por que economizar água é importante?",
+resposta:"Porque a água doce disponível é limitada."
+},
+
+{
+id:10,
+pergunta:"O que é sustentabilidade hídrica?",
+resposta:"Uso da água sem comprometer gerações futuras."
+}
+
+];
+
+let cartas = [];
+
+pares.forEach(par => {
+    cartas.push({
+        id:par.id,
+        texto:par.pergunta
+    });
+
+    cartas.push({
+        id:par.id,
+        texto:par.resposta
+    });
+});
+
+cartas.sort(() => Math.random() - 0.5);
+
+const game = document.getElementById("game");
+
+let primeiraCarta = null;
+let segundaCarta = null;
+let bloqueado = false;
+let acertos = 0;
+
+cartas.forEach(carta => {
+
+    const div = document.createElement("div");
+    div.classList.add("card");
+
+    div.innerHTML = `
+        <div class="card-inner">
+            <div class="front">?</div>
+            <div class="back">${carta.texto}</div>
+        </div>
+    `;
+
+    div.dataset.id = carta.id;
+
+    div.addEventListener("click", () => {
+
+        if(
+            bloqueado ||
+            div.classList.contains("flip") ||
+            div.classList.contains("matched")
+        ) return;
+
+        div.classList.add("flip");
+
+        if(!primeiraCarta){
+            primeiraCarta = div;
+            return;
+        }
+
+        segundaCarta = div;
+        bloqueado = true;
+
+        if(primeiraCarta.dataset.id === segundaCarta.dataset.id){
+
+            primeiraCarta.classList.add("matched");
+            segundaCarta.classList.add("matched");
+
+            acertos++;
+
+            document.getElementById("status").innerText =
+                `Pares encontrados: ${acertos} / 10`;
+
+            primeiraCarta = null;
+            segundaCarta = null;
+            bloqueado = false;
+
+            if(acertos === 10){
+
+                setTimeout(() => {
+
+                    alert(
+                        "Parabéns! Você concluiu o jogo sobre Água e Sustentabilidade!"
+                    );
+
+                },300);
+
+            }
+
+        } else {
+
+            setTimeout(() => {
+
+                primeiraCarta.classList.remove("flip");
+                segundaCarta.classList.remove("flip");
+
+                primeiraCarta = null;
+                segundaCarta = null;
+                bloqueado = false;
+
+            },1200);
+
+        }
+
+    });
+
+    game.appendChild(div);
+
+});
+
+</script>
+
+</body>
+</html>
