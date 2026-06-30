@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -6,37 +7,96 @@
 <title>Jogo da Memória - Água e Sustentabilidade</title>
 
 <style>
-body{
-    font-family: Arial, sans-serif;
-    background:#f4f9ff;
-    text-align:center;
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(135deg,#dff4ff,#f8fbff);
+    min-height:100vh;
     padding:20px;
 }
 
-h1{
-    color:#1565c0;
-}
-
-#game{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:10px;
+.container{
     max-width:1200px;
     margin:auto;
 }
 
-.card{
-    height:140px;
+h1{
+    text-align:center;
+    color:#0d47a1;
+    margin-bottom:20px;
+}
+
+.tela{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+.inicial{
+    max-width:600px;
+    margin:auto;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+button{
+    background:#1565c0;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
     cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#0d47a1;
+}
+
+.topo{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.card-info{
+    background:white;
+    padding:10px 15px;
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+#game{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+}
+
+.card{
+    height:130px;
     perspective:1000px;
+    cursor:pointer;
 }
 
 .card-inner{
     position:relative;
     width:100%;
     height:100%;
-    transition:transform 0.6s;
+    transition:transform .6s;
     transform-style:preserve-3d;
 }
 
@@ -54,7 +114,7 @@ h1{
     align-items:center;
     justify-content:center;
     padding:10px;
-    box-sizing:border-box;
+    text-align:center;
     font-size:14px;
     font-weight:bold;
 }
@@ -65,29 +125,156 @@ h1{
 }
 
 .back{
-    background:white;
-    border:2px solid #1976d2;
-    color:#333;
     transform:rotateY(180deg);
+    background:#f9f9f9;
+    border:2px solid #1976d2;
 }
 
-#status{
-    margin:20px;
-    font-size:20px;
-    font-weight:bold;
+.progress{
+    width:100%;
+    background:#ddd;
+    height:20px;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:#4caf50;
+    transition:.4s;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.modal-content{
+    background:white;
+    max-width:700px;
+    width:100%;
+    border-radius:15px;
+    padding:25px;
+}
+
+.modal h2{
+    margin-bottom:10px;
+}
+
+.hidden{
+    display:none;
+}
+
+.fim{
+    text-align:center;
+}
+
+@media(max-width:700px){
+    .topo{
+        flex-direction:column;
+    }
 }
 </style>
+
 </head>
 
 <body>
 
-<h1>💧 Jogo da Memória - Água e Sustentabilidade</h1>
+<div class="container">
 
-<p>Encontre a resposta correta para cada pergunta.</p>
+<div id="inicio" class="tela inicial">
+<h1>💧 Jogo da Memória em Duplas</h1>
 
-<div id="status">Pares encontrados: 0 / 10</div>
+<p><strong>Tema:</strong> Água e Sustentabilidade</p>
+
+<br>
+
+<input id="j1" placeholder="Nome do Jogador 1">
+<input id="j2" placeholder="Nome do Jogador 2">
+
+<button onclick="iniciar()">Iniciar Partida</button>
+
+<br><br>
+
+<p>
+Encontre os pares corretos de perguntas e respostas.
+Quem fizer mais pares vence!
+</p>
+
+</div>
+
+<div id="jogo" class="hidden">
+
+<h1>💧 Água e Sustentabilidade</h1>
+
+<div class="topo">
+
+<div class="card-info">
+👤 Vez de: <span id="vez"></span>
+</div>
+
+<div class="card-info">
+⏱️ Tempo: <span id="tempo">00:00</span>
+</div>
+
+<div class="card-info">
+🎯 Tentativas: <span id="tentativas">0</span>
+</div>
+
+<div class="card-info">
+🏆 <span id="placar"></span>
+</div>
+
+</div>
+
+<div class="progress">
+<div id="barra" class="progress-bar"></div>
+</div>
 
 <div id="game"></div>
+
+</div>
+
+<div id="explicacao" class="modal">
+<div class="modal-content">
+
+<h2>✅ Par Encontrado!</h2>
+
+<p id="textoExplicacao"></p>
+
+<br>
+
+<button onclick="fecharExplicacao()">Continuar</button>
+
+</div>
+</div>
+
+<div id="fim" class="modal">
+<div class="modal-content fim">
+
+<h2>🏆 Fim de Jogo</h2>
+
+<h3 id="vencedor"></h3>
+
+<br>
+
+<p id="resultado"></p>
+
+<br>
+
+<button onclick="location.reload()">Jogar Novamente</button>
+
+</div>
+</div>
+
+</div>
 
 <script>
 
@@ -96,166 +283,260 @@ const pares = [
 {
 id:1,
 pergunta:"O que é água potável?",
-resposta:"Água própria para o consumo humano."
+resposta:"Água própria para o consumo humano.",
+explicacao:"Apenas uma pequena parte da água do planeta está disponível para consumo humano."
 },
 
 {
 id:2,
 pergunta:"O que é o ciclo da água?",
-resposta:"Processo de evaporação, condensação e precipitação."
+resposta:"Processo de evaporação, condensação e precipitação.",
+explicacao:"O ciclo da água mantém a circulação natural da água no planeta."
 },
 
 {
 id:3,
 pergunta:"O que é uma nascente?",
-resposta:"Local onde a água brota naturalmente do solo."
+resposta:"Local onde a água brota naturalmente do solo.",
+explicacao:"As nascentes são fundamentais para a formação dos rios."
 },
 
 {
 id:4,
 pergunta:"O que é poluição hídrica?",
-resposta:"Contaminação de rios, lagos e mares."
+resposta:"Contaminação de rios, lagos e mares.",
+explicacao:"O descarte inadequado de resíduos é uma das principais causas."
 },
 
 {
 id:5,
 pergunta:"O que é reuso da água?",
-resposta:"Utilização da água já usada para outra finalidade."
+resposta:"Utilização da água já usada para outra finalidade.",
+explicacao:"Ajuda a reduzir o desperdício e preservar recursos hídricos."
 },
 
 {
 id:6,
 pergunta:"Qual a função da mata ciliar?",
-resposta:"Proteger as margens dos rios."
+resposta:"Proteger as margens dos rios.",
+explicacao:"Ela reduz erosão e assoreamento."
 },
 
 {
 id:7,
-pergunta:"O que significa consumo consciente de água?",
-resposta:"Utilizar a água sem desperdícios."
+pergunta:"O que significa consumo consciente?",
+resposta:"Utilizar a água sem desperdícios.",
+explicacao:"Pequenas atitudes geram grande economia."
 },
 
 {
 id:8,
 pergunta:"O que é assoreamento?",
-resposta:"Acúmulo de sedimentos nos rios."
+resposta:"Acúmulo de sedimentos nos rios.",
+explicacao:"Pode reduzir a profundidade dos cursos d'água."
 },
 
 {
 id:9,
-pergunta:"Por que economizar água é importante?",
-resposta:"Porque a água doce disponível é limitada."
+pergunta:"Por que economizar água?",
+resposta:"Porque a água doce disponível é limitada.",
+explicacao:"Menos de 3% da água do planeta é doce."
 },
 
 {
 id:10,
 pergunta:"O que é sustentabilidade hídrica?",
-resposta:"Uso da água sem comprometer gerações futuras."
+resposta:"Uso da água sem comprometer gerações futuras.",
+explicacao:"Busca equilibrar desenvolvimento e preservação."
 }
 
 ];
 
-let cartas = [];
+let cartas=[];
 
-pares.forEach(par => {
-    cartas.push({
-        id:par.id,
-        texto:par.pergunta
-    });
-
-    cartas.push({
-        id:par.id,
-        texto:par.resposta
-    });
+pares.forEach(p=>{
+cartas.push({id:p.id,texto:p.pergunta});
+cartas.push({id:p.id,texto:p.resposta});
 });
 
-cartas.sort(() => Math.random() - 0.5);
+cartas.sort(()=>Math.random()-0.5);
 
-const game = document.getElementById("game");
+let jogadorAtual=0;
+let pontos=[0,0];
+let nomes=["Jogador 1","Jogador 2"];
 
-let primeiraCarta = null;
-let segundaCarta = null;
-let bloqueado = false;
-let acertos = 0;
+let primeira=null;
+let segunda=null;
+let bloqueado=false;
+let tentativas=0;
+let paresEncontrados=0;
+let segundos=0;
+let timer;
 
-cartas.forEach(carta => {
+function iniciar(){
 
-    const div = document.createElement("div");
-    div.classList.add("card");
+nomes[0]=document.getElementById("j1").value || "Jogador 1";
+nomes[1]=document.getElementById("j2").value || "Jogador 2";
 
-    div.innerHTML = `
-        <div class="card-inner">
-            <div class="front">?</div>
-            <div class="back">${carta.texto}</div>
-        </div>
-    `;
+document.getElementById("inicio").classList.add("hidden");
+document.getElementById("jogo").classList.remove("hidden");
 
-    div.dataset.id = carta.id;
+atualizarPainel();
 
-    div.addEventListener("click", () => {
+timer=setInterval(()=>{
+segundos++;
+let m=Math.floor(segundos/60).toString().padStart(2,"0");
+let s=(segundos%60).toString().padStart(2,"0");
+document.getElementById("tempo").textContent=`${m}:${s}`;
+},1000);
 
-        if(
-            bloqueado ||
-            div.classList.contains("flip") ||
-            div.classList.contains("matched")
-        ) return;
+criarTabuleiro();
+}
 
-        div.classList.add("flip");
+function atualizarPainel(){
 
-        if(!primeiraCarta){
-            primeiraCarta = div;
-            return;
-        }
+document.getElementById("vez").textContent=nomes[jogadorAtual];
 
-        segundaCarta = div;
-        bloqueado = true;
+document.getElementById("placar").textContent=
+`${nomes[0]}: ${pontos[0]} | ${nomes[1]}: ${pontos[1]}`;
 
-        if(primeiraCarta.dataset.id === segundaCarta.dataset.id){
+document.getElementById("tentativas").textContent=tentativas;
 
-            primeiraCarta.classList.add("matched");
-            segundaCarta.classList.add("matched");
+document.getElementById("barra").style.width=
+`${(paresEncontrados/10)*100}%`;
+}
 
-            acertos++;
+function criarTabuleiro(){
 
-            document.getElementById("status").innerText =
-                `Pares encontrados: ${acertos} / 10`;
+const game=document.getElementById("game");
 
-            primeiraCarta = null;
-            segundaCarta = null;
-            bloqueado = false;
+cartas.forEach(carta=>{
 
-            if(acertos === 10){
+const div=document.createElement("div");
 
-                setTimeout(() => {
+div.className="card";
 
-                    alert(
-                        "Parabéns! Você concluiu o jogo sobre Água e Sustentabilidade!"
-                    );
+div.dataset.id=carta.id;
 
-                },300);
+div.innerHTML=`
+<div class="card-inner">
+<div class="front">💧</div>
+<div class="back">${carta.texto}</div>
+</div>
+`;
 
-            }
+div.addEventListener("click",()=>clicarCarta(div));
 
-        } else {
-
-            setTimeout(() => {
-
-                primeiraCarta.classList.remove("flip");
-                segundaCarta.classList.remove("flip");
-
-                primeiraCarta = null;
-                segundaCarta = null;
-                bloqueado = false;
-
-            },1200);
-
-        }
-
-    });
-
-    game.appendChild(div);
+game.appendChild(div);
 
 });
+
+}
+
+function clicarCarta(carta){
+
+if(
+bloqueado ||
+carta.classList.contains("flip") ||
+carta.classList.contains("matched")
+) return;
+
+carta.classList.add("flip");
+
+if(!primeira){
+primeira=carta;
+return;
+}
+
+segunda=carta;
+bloqueado=true;
+tentativas++;
+
+if(primeira.dataset.id===segunda.dataset.id){
+
+primeira.classList.add("matched");
+segunda.classList.add("matched");
+
+const par=pares.find(p=>p.id==primeira.dataset.id);
+
+pontos[jogadorAtual]++;
+paresEncontrados++;
+
+document.getElementById("textoExplicacao").innerHTML=
+`<strong>${par.explicacao}</strong>`;
+
+document.getElementById("explicacao").style.display="flex";
+
+if(paresEncontrados===10){
+
+setTimeout(finalizarJogo,500);
+
+}
+
+} else {
+
+setTimeout(()=>{
+
+primeira.classList.remove("flip");
+segunda.classList.remove("flip");
+
+primeira=null;
+segunda=null;
+bloqueado=false;
+
+jogadorAtual=jogadorAtual===0?1:0;
+
+atualizarPainel();
+
+},1200);
+
+}
+
+atualizarPainel();
+
+}
+
+function fecharExplicacao(){
+
+document.getElementById("explicacao").style.display="none";
+
+primeira=null;
+segunda=null;
+bloqueado=false;
+
+atualizarPainel();
+
+}
+
+function finalizarJogo(){
+
+clearInterval(timer);
+
+let vencedor;
+
+if(pontos[0]>pontos[1]){
+vencedor=`🥇 ${nomes[0]} venceu!`;
+}
+else if(pontos[1]>pontos[0]){
+vencedor=`🥇 ${nomes[1]} venceu!`;
+}
+else{
+vencedor="🤝 Empate!";
+}
+
+document.getElementById("vencedor").textContent=vencedor;
+
+document.getElementById("resultado").innerHTML=
+`
+${nomes[0]}: ${pontos[0]} pares<br><br>
+${nomes[1]}: ${pontos[1]} pares<br><br>
+Tentativas: ${tentativas}<br><br>
+Tempo: ${document.getElementById("tempo").textContent}
+`;
+
+document.getElementById("fim").style.display="flex";
+
+}
 
 </script>
 
